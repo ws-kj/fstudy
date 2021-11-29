@@ -3,9 +3,9 @@
 }
 
 .guide {
-    outline: 2px solid black;
-    border-radius: 1%;
+    outline: 1px solid gray;
     padding:1%;
+    margin: 1%;
 }
 
 .card {
@@ -14,11 +14,9 @@
 
 .card-face {
     display: inline-block;
-    outline: 2px solid black;
+    outline: 1px solid gray;
     margin:1%;
-    padding:5%;
-    width:40%;
-    border-radius: 1%;
+    padding:1%;
 }
 
 
