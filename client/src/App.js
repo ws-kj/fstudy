@@ -15,7 +15,9 @@ class Guide extends Component {
     pack = () => {
         let j = {};
         j[this.state.title] = this.state.cards;
+        console.log(JSON.stringify(j));
         return(Buffer.from(JSON.stringify(j)));
+        
     }
 
     unpack = (buf) => {
@@ -26,6 +28,10 @@ class Guide extends Component {
         }
     }
 
+    populate = (t,c) => {
+        this.setState({title: t});
+        this.setState({cards: c});
+    }
     render() {
         const items = Object.entries(this.state.cards).map(([f, b]) =>
             <Card front={f} back={b}/>
@@ -57,7 +63,7 @@ class Card extends Component {
 class GuideForm extends Component {
     state = {
         title: '',
-        idCards: [['', '']],     //need index for dynamic relocation and such
+        idCards: [],     //need index for dynamic relocation and such
         ipfsHash: ''
     };
 
@@ -66,25 +72,24 @@ class GuideForm extends Component {
     };
 
     createCard = () => {
-        this.state.idCards.push(['', '']);
+        let obj = {
+            front: '',
+            back: ''
+        };
+        this.state.idCards.push(obj);
         this.setState({idCards: this.state.idCards});
     }
 
     genGuide = async (event) => {
         event.preventDefault();
-        let g = new Guide();
-        g.title = this.state.title;
-        let c = {};
-        for(let i=0; i<this.state.idCards.length; i++) {
-            c[this.state.idCards[i][0]] = this.state.idCards[i][1];
-        }
-        g.cards = c;
-        
-        let buffer = g.pack();
+
+        let j = {};
+        j[this.state.title] = this.state.idCards;
+        console.log(JSON.stringify(j));
+        let buffer = Buffer.from(JSON.stringify(j));
 
         await ipfs.add(buffer, (err, ipfsHash) => {
             console.log(err,ipfsHash);
-            console.log("DOING");
             this.setState({ ipfsHash:ipfsHash[0].hash });
             if(this.state.ipfsHash === '') {
                 alert("Error uploading study guide, please try again soon.");
@@ -92,12 +97,16 @@ class GuideForm extends Component {
                 console.log(this.state.ipfsHash);
             }
         });
+        
     }
     
     handleChange = (cid, pos) => (event) => {
-        this.state.idCards[cid[pos]] = event.target.value;
-        console.log(cid + " " + pos);
-        this.setState({idCards: this.state.idCards});
+        if(pos == 0) {
+            this.state.idCards[cid].front = event.target.value;
+        } else {
+            this.state.idCards[cid].back = event.target.value;
+        }
+        this.setState({...this.state, idCards: this.state.idCards});
     }
 
     render() {
