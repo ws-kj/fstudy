@@ -63,7 +63,7 @@ class Card extends Component {
 class GuideForm extends Component {
     state = {
         title: '',
-        idCards: [],     //need index for dynamic relocation and such
+        idCards: [],     
         ipfsHash: ''
     };
 
@@ -94,12 +94,22 @@ class GuideForm extends Component {
             if(this.state.ipfsHash === '') {
                 alert("Error uploading study guide, please try again soon.");
             } else {
-                console.log(this.state.ipfsHash);
+				let d = this.createApi(); 
             }
+
         });
-        
+      
+
     }
-    
+   
+	createApi = async () => {
+				let api = '/api/create/' + this.state.ipfsHash;
+				console.log(api);
+				let r = fetch(api)
+					.then(response => response.json())
+					.then(data => console.log(data));
+	}
+
     handleChange = (cid, pos) => (event) => {
         if(pos == 0) {
             this.state.idCards[cid].front = event.target.value;
@@ -130,7 +140,7 @@ class GuideForm extends Component {
         );
 
         return (
-            <div className="guide">
+           <div className="guide">
                 <Form onSubmit={this.genGuide}>
                     <input 
                         type="text"
