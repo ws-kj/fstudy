@@ -87,23 +87,11 @@ class GuideForm extends Component {
         j[this.state.title] = this.state.idCards;
         console.log(JSON.stringify(j));
         let buffer = Buffer.from(JSON.stringify(j));
-
-        await ipfs.add(buffer, (err, ipfsHash) => {
-            console.log(err,ipfsHash);
-            this.setState({ ipfsHash:ipfsHash[0].hash });
-            if(this.state.ipfsHash === '') {
-                alert("Error uploading study guide, please try again soon.");
-            } else {
-				let d = this.createApi(); 
-            }
-
-        });
-      
-
+		this.createApi(buffer);
     }
    
-	createApi = async () => {
-				let api = '/api/create/' + this.state.ipfsHash;
+	createApi = async (buf) => {
+				let api = '/api/create/' + buf;
 				console.log(api);
 				let r = fetch(api)
 					.then(response => response.json())

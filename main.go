@@ -7,7 +7,8 @@ import (
     "net/http"
     "io/ioutil"
     "github.com/gorilla/mux"
-//    ipfs "github.com/ipfs/go-ipfs-api"
+    ipfs "github.com/ipfs/go-ipfs-api"
+	"strings"
 )
 
 const ipfsNode = "https://ipfs.infura.io:5001"
@@ -29,12 +30,30 @@ func getGuide(hash string) (string, error) {
     return string(data), nil
 }
 
+func createGuide(raw string) (string, error) {
+	//TODO VERIFY: good json, no xss, etc
+
+	shell := ipfs.NewShell(ipfsNode)
+	hash, err := shell.Add(strings.NewReader(raw))
+	if err != nil {
+		return "", err
+	}
+	fmt.Println("Raw: " + raw)
+	fmt.Println("\nHash: " + hash)
+	return hash, nil
+}
+
 func createHandle(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)			//TODO add server side ipfs upload
+	vars := mux.Vars(r)			
 	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", "application/json")
-	hash := vars["hash"]
-	fmt.Println("create handle reached: " + hash)
+	guide := vars["hash"] //whhy?
+
+	fmt.Println("create handle reached: " + guide)
+	hash, err := createGuide(guide);
+	if err != nil {
+		log.Fatal(err) //TODO return err to response
+	}
 	data, _ := json.Marshal("{\"hash\": \"" + hash + "\"}")
 	w.Write(data)
 //	fmt.Fprintf(w, data);
