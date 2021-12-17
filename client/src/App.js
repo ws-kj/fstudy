@@ -107,7 +107,11 @@ class GuideForm extends Component {
 				console.log(api);
 				let r = fetch(api)
 					.then(response => response.json())
-					.then(data => console.log(data));
+					.then(data => {
+						let hash = JSON.parse(data)['hash'];
+						window.location.assign("/guides/" + hash);
+					});
+//					.then(data => window.location.assign("/guides/" + data['hash']));
 	}
 
     handleChange = (cid, pos) => (event) => {

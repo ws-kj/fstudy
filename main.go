@@ -35,7 +35,7 @@ func createHandle(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	hash := vars["hash"]
 	fmt.Println("create handle reached: " + hash)
-	data, _ := json.Marshal("{'hash': '" + hash + "'}")
+	data, _ := json.Marshal("{\"hash\": \"" + hash + "\"}")
 	w.Write(data)
 //	fmt.Fprintf(w, data);
 }
@@ -66,4 +66,5 @@ func main() {
     if err := http.ListenAndServe(":8000", nil); err != nil {
         log.Fatal(err)
     }
+ 
 }
